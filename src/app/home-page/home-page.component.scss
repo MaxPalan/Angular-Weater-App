@@ -1,0 +1,75 @@
+.homepage {
+  width: 100vw;
+  &__citysearch {
+    width: 25vw;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    &-inp {
+      width: 100%;
+      font-size: 25px;
+      padding: 7px;
+      outline: none;
+      margin-top: 30px;
+      background-color: #FBFBFB;
+      border: 2px solid #EEEEEE;
+    }
+    &-sel {
+      display: none;
+    }
+    .active {
+      display: block;
+      width: 100%;
+      font-size: 20px;
+      padding: 2px;
+    }
+  }
+
+  &__currcity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 200px;
+    margin-top: 140px;
+    &-interface {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 20px;
+      align-items: center;
+    }
+    &-img {
+      width: 100px;
+      height: 100px;
+      background-color: grey;
+    }
+    &-info {
+      list-style-type: none;
+    }
+    &-name, &-temp {
+      font-size: 25px;
+    }
+    &-btn {
+      padding: 7px;
+      font-size: 25px;
+    }
+  }
+
+  &__currforecast {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 200px;
+    margin-top: 100px;
+    list-style-type: none;
+    &-day {
+      width: 100px;
+      height: 100px;
+      background-color: grey;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

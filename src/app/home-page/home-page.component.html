@@ -1,0 +1,25 @@
+<section class="homepage">
+  <form class="homepage__citysearch">
+    <input name="input" type="text" class="homepage__citysearch-inp" #input placeholder="City search" (input)="showCityList()" (blur)="hideCityList()" (keydown.enter)="clearInput()" [(ngModel)]="inputValue">
+    <select name="select" #target [ngClass]="{'homepage__citysearch-sel': condition, 'active': !condition}" 
+    (change)="chosenCity()" [(ngModel)]="selectValue">
+      <option class="homepage__citysearch-op" *ngFor="let city of cityList">{{ city }}</option>
+    </select>
+  </form>
+  <div class="homepage__currcity">
+    <div class="homepage__currcity-interface">
+      <div class="homepage__currcity-img"></div>
+      <ul class="homepage__currcity-info">
+        <li class="homepage__currcity-name">{{ ourCity }}</li>
+        <li class="homepage__currcity-temp">{{ ourTemp }}<sup>o</sup> C</li>
+      </ul>
+    </div>
+    <button class="homepage__currcity-btn">Add to Favorite</button>
+  </div>
+  <ul class="homepage__currforecast">
+    <li class="homepage__currforecast-day" *ngFor="let dayData of fiveDayData">
+      <span>{{ dayData.day }}</span>
+      <span>{{ dayData.metric }}<sup>o</sup> C</span>
+    </li>
+  </ul>
+</section>
