@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { DataService } from '../home-page/data.service';
 
 let favoriteData: any[] = [];
 favoriteData = [
@@ -29,10 +30,20 @@ favoriteData = [
   templateUrl: './favorite-page.component.html',
   styleUrls: ['./favorite-page.component.scss']
 })
-export class FavoritePageComponent {
+export class FavoritePageComponent implements OnInit {
+  
+  data!: any[];
+  constructor(private dataService: DataService) {
+    this.data = this.dataService.favoriteList;
+   }
+  
+  ngOnInit(): void {
 
-  constructor() { }
+  }
+  
 
-  data = favoriteData;
+  
+
+  
 
 }

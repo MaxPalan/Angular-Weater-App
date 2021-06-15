@@ -23,6 +23,9 @@
         color: black;
         transition: 0.4s;
         cursor: pointer;
+        &:focus {
+          color: #32B1F0;
+        }
         &:hover {
           color: #32B1F0;
         }

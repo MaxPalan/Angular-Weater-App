@@ -3,13 +3,12 @@
   <nav class="header__nav">
     <ul class="header__nav-list">
       <li class="header__nav-item">
-        <button>Home</button>
+        <button routerLink="">Home</button>
       </li>
       <li class="header__nav-item">
-        <button>Favorites</button>
+        <button routerLink="/favorites">Favorites</button>
       </li>
     </ul>
   </nav>
 </header>
-<!-- <app-home-page></app-home-page> -->
-<app-favorite-page></app-favorite-page>
+<router-outlet></router-outlet>
