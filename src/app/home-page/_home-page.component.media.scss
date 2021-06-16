@@ -1,0 +1,73 @@
+@media (max-width: 1200px) {
+  .homepage {
+    &__citysearch {
+      width: 33vw;
+    }
+    &__currcity {
+      padding: 0 100px;
+    }
+    &__currforecast {
+      padding: 0 100px;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .homepage {
+    &__citysearch {
+      width: 50vw;
+    }
+    &__currcity {
+      padding: 0;
+      justify-content: space-around;
+    }
+    &__currforecast {
+      padding: 0;
+      justify-content: space-around;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .homepage {
+    &__currcity {
+      padding: 0 20px;
+    }
+    &__currforecast {
+      padding: 0 20px;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .homepage {
+    &__citysearch {
+      width: 80vw;
+    }
+    &__currcity {
+      margin-top: 40px;
+      flex-direction: column;
+      &-interface {
+        column-gap: 0;
+      }
+      &-img {
+        width: 120px;
+        height: 120px;
+      }
+      &-add {
+        margin-top: 30px;
+      }
+      &-favbtn {
+        font-size: 21px;
+      }
+    }
+    &__currforecast {
+      margin: 30px 0;
+      flex-direction: column;
+      &-day {
+        width: 150px;
+        margin-top: 10px;
+      }
+    }
+  }
+}

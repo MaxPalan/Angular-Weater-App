@@ -1,13 +1,14 @@
 .favorite {
+  padding: 0 20px;
+  width: 100vw;
   &__city {
-    width: 100%;
-    &-info {
-      display: flex;
-      justify-content: space-around;
-      list-style-type: none;
-      margin-top: 50px;
-    }
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    list-style-type: none;
+    margin-top: 50px;
     &-item {
+      margin: 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -16,9 +17,16 @@
       height: 180px;
       background-color: grey;
       font-size: 25px;
+      cursor: pointer;
+      transition: 0.5s;
+      &:hover {
+        transform: scale(1.1);
+      }
       span {
         margin-bottom: 10px;
       }
     }
   }
 }
+
+@import './favorite-page.component.media';

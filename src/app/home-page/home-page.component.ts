@@ -15,6 +15,7 @@ interface currData {
 export class HomePageComponent implements OnInit{
   
   @ViewChild('input') input: any;
+  @ViewChild('select') select: any;
 
   condition: boolean = true;
   status: boolean = true;
@@ -22,56 +23,58 @@ export class HomePageComponent implements OnInit{
   inputValue!: string;
   selectValue!: string;
 
-  cityList!: string[];
+  // cityList!: string[];
 
-  ourData!: any[];
-  currData!: currData;
+  ourCityData!: any[];
+  currentCityData!: currData;
 
-  kyivFiveDayData: any;
+  currentCityFiveDayData: any;
 
   dayName: any[] = [];
   years: any[] = [];
   month: any[] = [];
   days: any[] = [];
 
-  kyivFiveDayMetric: any[] = [];
-  kyivDayDate: any[] = [];
+  currentCityFiveDayMetric: any[] = [];
+  currentDayDate: any[] = [];
   
-  kyivFiveDayRenderData: any[] = [];
+  currentCityFiveDayRenderData: any[] = [];
 
-  constructor(private dataService: DataService) {
-    this.cityList = this.dataService.cityName;
-    this.inputValue = this.dataService.inputValue;
-  }
+  requestedCityList: any[] = [];
+  requestedCityData: any[] = [];
+
+  findedCity: any;
+
+  constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.getKyivCity().subscribe((ourData: any) => {                //getting current weather in Kyiv
+    this.dataService.getKyivCity().subscribe((ourCityData: any) => {                //getting current weather in Kyiv
 
-      this.ourData = ourData;
+      this.ourCityData = ourCityData;
 
-      this.currData = {
+      this.currentCityData = {
         currCity: 'Kyiv',
-        currTemp: ourData[0].Temperature.Metric.Value,
-        currWeather: ourData[0].WeatherText
+        currTemp: ourCityData[0].Temperature.Metric.Value,
+        currWeather: ourCityData[0].WeatherText
       }
     })
 
     this.dataService.getFiveDaysOfKyiv().subscribe((kyivFiveDayData: any) => {  //getting DailyForecasts for 5 days in Kyiv
 
-      this.kyivFiveDayData = kyivFiveDayData;
+      this.currentCityFiveDayData = kyivFiveDayData;
 
-      this.kyivFiveDayData.DailyForecasts.forEach((d: { Temperature: { Maximum: { Value: any; }; }; Date: string; }) => {
-        this.kyivFiveDayMetric.push(d.Temperature.Maximum.Value);
-        this.kyivDayDate.push(d.Date.substr(0, 10).split('').filter((x: string) => x !== '-').join(''));
+      this.currentCityFiveDayData.DailyForecasts.forEach((d: any) => {
+        this.currentCityFiveDayMetric.push(d.Temperature.Maximum.Value);
+        this.currentDayDate.push(d.Date.substr(0, 10).split('').filter((x: string) => x !== '-').join(''));
       })
 
-      this.kyivDayDate.forEach(d => {
+      this.currentDayDate.forEach(d => {
         this.years.push(+(d.slice(0, 4)));
         this.month.push(+(d.slice(4, 6)) - 1);
         this.days.push(+(d.slice(6)));
       })
 
-      for (let i = 0; i < this.kyivDayDate.length; i++) {
+      for (let i = 0; i < this.currentDayDate.length; i++) {
         const getWeekDay = (date: Date) => {
           let days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
           this.dayName.push(days[date.getDay()]);
@@ -81,45 +84,56 @@ export class HomePageComponent implements OnInit{
         getWeekDay(date);
       }
 
-      for (let i = 0; i < this.kyivDayDate.length; i++) {
-        this.kyivFiveDayRenderData.push({
-          metric: this.kyivFiveDayMetric[i],
+      for (let i = 0; i < this.currentDayDate.length; i++) {
+        this.currentCityFiveDayRenderData.push({
+          metric: this.currentCityFiveDayMetric[i],
           day: this.dayName[i]
         })
       }
-
-      console.log(this.kyivFiveDayData);
     });
     
 
-    // this.dataService.favoriteList.forEach(d => {
-    //   if (this.ourData.currCity === d.currCity) {
-    //     this.status = false;
-    //   }
-    // })
+    this.dataService.favoriteList.forEach(d => {
+      if (this.currentCityData.currCity === d.currCity) {
+        this.status = false;
+      }
+    })
   }
 
+  // showCityList() {
+  //   this.input.focused = true;
+  //   if (this.inputValue !== '' || this.inputValue !== undefined) {
+  //     this.condition = false;
+  //     this.cityList = this.cityList.filter((city) => {
+  //       return city.toLocaleLowerCase().startsWith(this.inputValue.toLocaleLowerCase());
+  //     })
+  //   }
+  // }
+  // hideCityList() {
+  //   this.input.focused = false;
+  //   if ((this.input.focused === false && this.inputValue === undefined) || (this.input.focused === false && this.inputValue === '')) {
+  //     this.condition = true;
+  //   }
+  // }
+  
   showCityList() {
-    this.input.focused = true;
-    if (this.inputValue !== '' || this.inputValue !== undefined) {
-      this.condition = false;
-      this.cityList = this.cityList.filter((city) => {
-        return city.toLocaleLowerCase().startsWith(this.inputValue.toLocaleLowerCase());
-      })
-    }
-  }
-  hideCityList() {
-    this.input.focused = false;
-    if ((this.input.focused === false && this.inputValue === undefined) || (this.input.focused === false && this.inputValue === '')) {
-      this.condition = true;
-    }
-  }
-  clearInput() {
     this.dataService.inputValue = this.inputValue;
     this.condition = true;
     
-    this.dataService.getCityList().subscribe((res) => {
-      console.log(res);
+    this.dataService.getCityList().subscribe((res: any) => {
+
+      this.requestedCityList = res;
+      
+      this.requestedCityList.forEach(city => {
+        this.requestedCityData.push({
+          Key: city.Key,
+          LocalizedName: city.LocalizedName,
+          Country: city.Country.LocalizedName,
+          LocalizedCityName: city.AdministrativeArea.LocalizedName
+        });
+      })
+
+      this.condition = false;
     })
     // this.ourData = {
     //   currCity: this.selectValue,
@@ -133,21 +147,81 @@ export class HomePageComponent implements OnInit{
     //     this.status = true;
     //   }
     // })
-    this.inputValue = '';
+    // this.inputValue = '';
   }
+
   chosenCity() {
     this.inputValue = this.selectValue;
+
+    this.findedCity = this.requestedCityData.find(city => {
+      return city.LocalizedCityName === this.selectValue;
+    })
+
+    this.dataService.currentCityKey = this.findedCity.Key;
+    
+    this.dataService.getChosenCity().subscribe((res: any) => {
+      this.ourCityData = res;
+
+      this.currentCityData = {
+        currCity: this.selectValue,
+        currTemp: res[0].Temperature.Metric.Value,
+        currWeather: res[0].WeatherText
+      }
+    })
+
+    this.dataService.getFiveDaysOfChosenCity().subscribe((chosenCityFiveDayData: any) => {  
+                                                                        //getting DailyForecasts for 5 days in chosen city
+
+      this.currentCityFiveDayData = chosenCityFiveDayData;
+      this.currentCityFiveDayMetric = [];
+      this.currentDayDate = [];
+      this.currentCityFiveDayData.DailyForecasts.forEach((d: any) => {
+        
+        this.currentCityFiveDayMetric.push(d.Temperature.Maximum.Value);
+        
+        this.currentDayDate.push(d.Date.substr(0, 10).split('').filter((x: string) => x !== '-').join(''));
+      })
+      
+      this.years = [];
+      this.month = [];
+      this.days = [];
+      this.currentDayDate.forEach(d => {
+       
+        this.years.push(+(d.slice(0, 4)));
+        this.month.push(+(d.slice(4, 6)) - 1);
+        this.days.push(+(d.slice(6)));
+      
+      })
+      
+      this.dayName = [];
+      for (let i = 0; i < this.currentDayDate.length; i++) {
+        const getWeekDay = (date: Date) => {
+          let days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          this.dayName.push(days[date.getDay()]);
+          return days[date.getDay()];
+        }
+        let date = new Date(this.years[i], this.month[i], this.days[i]);
+        getWeekDay(date);
+      }
+      
+      this.currentCityFiveDayRenderData = [];
+      for (let i = 0; i < this.currentDayDate.length; i++) {
+        this.currentCityFiveDayRenderData.push({
+          metric: this.currentCityFiveDayMetric[i],
+          day: this.dayName[i]
+        })
+      }
+    });
   }
+
   addThisCity() {
-    // this.dataService.favoriteList.push(this.ourData);
-    // this.dataService.favoriteList.forEach(d => {
-    //   if (this.ourData.currCity === d.currCity) {
-    //     this.status = false;
-    //   } else {
-    //     this.status = true;
-    //   }
-    // })
-    console.log(this.ourData);
-    console.log(this.dataService.favoriteList);
+    this.dataService.favoriteList.push(this.currentCityData);
+    this.dataService.favoriteList.forEach(d => {
+      if (this.currentCityData.currCity === d.currCity) {
+        this.status = false;
+      } else {
+        this.status = true;
+      }
+    })
   }
 }
