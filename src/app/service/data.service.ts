@@ -5,6 +5,7 @@ interface currData {
   currCity?: string;
   currTemp?: number;
   currWeather?: string;
+  currCityKey?: string;
 }
 
 @Injectable({
@@ -15,9 +16,11 @@ export class DataService {
 
   inputValue!: string;
   
-  currentCityKey!: string;
+  currentCityKey: any;
 
   favoriteList: Array<currData> = [];
+
+  chosenFromFavorite: any;
   
   constructor(private http: HttpClient) { }
 

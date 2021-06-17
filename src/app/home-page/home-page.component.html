@@ -3,7 +3,9 @@
     <input name="input" type="text" class="homepage__citysearch-inp" #input placeholder="City search" (keydown.enter)="showCityList()" [(ngModel)]="inputValue">
     <select name="select" #select  [ngClass]="{'homepage__citysearch-sel': condition, 'active': !condition}" 
     (change)="chosenCity()" [(ngModel)]="selectValue">
-      <option class="homepage__citysearch-op" *ngFor="let city of requestedCityData">{{ city.LocalizedCityName }}</option>
+      <option class="homepage__citysearch-op" *ngFor="let city of requestedCityData">
+        {{ city.LocalizedCityName }} ({{ city.Country}}/Alt. name: {{city.LocalizedName}})
+      </option>
     </select>
   </form>
   <div class="homepage__currcity">
@@ -12,6 +14,8 @@
       <ul class="homepage__currcity-info">
         <li class="homepage__currcity-name">{{ currentCityData.currCity }}</li>
         <li class="homepage__currcity-temp">{{ currentCityData.currTemp }}<sup>o</sup> C</li>
+        <li class="homepage__currcity-name">{{ currentCityData.currWeather }}</li>
+        <li class="homepage__currcity-name">ID: "{{ currentCityData.currCityKey }}"</li>
       </ul>
     </div>
     <div class="homepage__currcity-add">

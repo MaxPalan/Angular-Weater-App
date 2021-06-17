@@ -1,9 +1,9 @@
 <section class="favorite">
   <ul class="favorite__city">
-    <li class="favorite__city-item" routerLink="" *ngFor="let d of data">
-      <span>{{ d.currCity }}</span>
-      <span>{{ d.currTemp }}<sup>o</sup> C</span>
-      <span>{{ d.currWeather }}</span>
+    <li class="favorite__city-item" routerLink="" *ngFor="let city of favoriteList" (click)="setChosenCity(city)">
+      <span>{{ city.currCity }}</span>
+      <span>{{ city.currTemp }}<sup>o</sup> C</span>
+      <span>{{ city.currWeather }}</span>
     </li>
   </ul>
 </section>

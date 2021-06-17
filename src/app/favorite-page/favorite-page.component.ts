@@ -1,29 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from '../home-page/data.service';
+import { DataService } from '../service/data.service';
 
-let favoriteData: any[] = [];
-favoriteData = [
-  {
-    name: 'London',
-    temp: 5,
-    weather: 'Sunny'
-  },
-  {
-    name: 'Madrid',
-    temp: 12,
-    weather: 'Rainy'
-  },
-  {
-    name: 'Paris',
-    temp: 11,
-    weather: 'Cloudy'
-  },
-  {
-    name: 'Kiev',
-    temp: 9,
-    weather: 'Sunny'
-  }
-]
+interface currData {
+  currCity?: string;
+  currTemp?: number;
+  currWeather?: string;
+  currCityKey?: string;
+}
 
 @Component({
   selector: 'app-favorite-page',
@@ -32,16 +15,21 @@ favoriteData = [
 })
 export class FavoritePageComponent implements OnInit {
   
-  data!: any[];
+  favoriteList!: currData[];
+
   constructor(private dataService: DataService) {
-    this.data = this.dataService.favoriteList;
+    this.favoriteList = this.dataService.favoriteList;
    }
   
   ngOnInit(): void {
 
   }
   
+  setChosenCity(currCity: currData) {                           //data fo render chosen city from favorite list
 
+    this.dataService.chosenFromFavorite = this.dataService.favoriteList.find(city => city == currCity)
+
+  }
   
 
   

@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DataService } from './data.service';
+import { DataService } from '../service/data.service';
 
 interface currData {
   currCity?: string;
   currTemp?: number;
   currWeather?: string;
+  currCityKey?: string;
 }
 
 @Component({
@@ -17,20 +18,18 @@ export class HomePageComponent implements OnInit{
   @ViewChild('input') input: any;
   @ViewChild('select') select: any;
 
-  condition: boolean = true;
-  status: boolean = true;
+  condition: boolean = true;                                          //css class status of <select>
+  status: boolean = true;                                             //css class status of icon for added city
 
   inputValue!: string;
   selectValue!: string;
 
-  // cityList!: string[];
-
-  ourCityData!: any[];
+  ourCityData!: any[];                                                //data of displayed city
   currentCityData!: currData;
 
   currentCityFiveDayData: any;
 
-  dayName: any[] = [];
+  dayName: any[] = [];                                                //getting date & day name fo 5 day forecasts
   years: any[] = [];
   month: any[] = [];
   days: any[] = [];
@@ -38,16 +37,24 @@ export class HomePageComponent implements OnInit{
   currentCityFiveDayMetric: any[] = [];
   currentDayDate: any[] = [];
   
-  currentCityFiveDayRenderData: any[] = [];
+  currentCityFiveDayRenderData: any[] = [];                           //data for rendering 5 day forecasts
 
-  requestedCityList: any[] = [];
+  requestedCityList: any[] = [];                                      //data of requested cities
   requestedCityData: any[] = [];
 
   findedCity: any;
 
   constructor(private dataService: DataService) { }
 
-  ngOnInit(): void {
+  ngOnInit(): void {                                                  //checking of added city
+    this.dataService.favoriteList.forEach(city => {
+      if (this.currentCityData.currCity === city.currCity) {
+        this.status = false;
+      } else {
+        this.status = true;
+      }
+    })
+
     this.dataService.getKyivCity().subscribe((ourCityData: any) => {                //getting current weather in Kyiv
 
       this.ourCityData = ourCityData;
@@ -55,25 +62,26 @@ export class HomePageComponent implements OnInit{
       this.currentCityData = {
         currCity: 'Kyiv',
         currTemp: ourCityData[0].Temperature.Metric.Value,
-        currWeather: ourCityData[0].WeatherText
+        currWeather: ourCityData[0].WeatherText,
+        currCityKey: '324505'
       }
     })
 
     this.dataService.getFiveDaysOfKyiv().subscribe((kyivFiveDayData: any) => {  //getting DailyForecasts for 5 days in Kyiv
 
       this.currentCityFiveDayData = kyivFiveDayData;
-
-      this.currentCityFiveDayData.DailyForecasts.forEach((d: any) => {
-        this.currentCityFiveDayMetric.push(d.Temperature.Maximum.Value);
-        this.currentDayDate.push(d.Date.substr(0, 10).split('').filter((x: string) => x !== '-').join(''));
+                                                        //The logic below is used to get up-to-date weather data for 5 days
+      this.currentCityFiveDayData.DailyForecasts.forEach((forecast: any) => {
+        this.currentCityFiveDayMetric.push(forecast.Temperature.Maximum.Value);
+        this.currentDayDate.push(forecast.Date.substr(0, 10).split('').filter((x: string) => x !== '-').join(''));
       })
-
-      this.currentDayDate.forEach(d => {
-        this.years.push(+(d.slice(0, 4)));
-        this.month.push(+(d.slice(4, 6)) - 1);
-        this.days.push(+(d.slice(6)));
+                                                        //separatig date for years, monthes & days
+      this.currentDayDate.forEach(date => {                                        
+        this.years.push(+(date.slice(0, 4)));
+        this.month.push(+(date.slice(4, 6)) - 1);
+        this.days.push(+(date.slice(6)));
       })
-
+                                                              //getting actual 5 days from now
       for (let i = 0; i < this.currentDayDate.length; i++) {
         const getWeekDay = (date: Date) => {
           let days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -83,7 +91,7 @@ export class HomePageComponent implements OnInit{
         let date = new Date(this.years[i], this.month[i], this.days[i]);
         getWeekDay(date);
       }
-
+                                                              //set actual FiveDayRenderData
       for (let i = 0; i < this.currentDayDate.length; i++) {
         this.currentCityFiveDayRenderData.push({
           metric: this.currentCityFiveDayMetric[i],
@@ -91,35 +99,11 @@ export class HomePageComponent implements OnInit{
         })
       }
     });
-    
-
-    this.dataService.favoriteList.forEach(d => {
-      if (this.currentCityData.currCity === d.currCity) {
-        this.status = false;
-      }
-    })
   }
-
-  // showCityList() {
-  //   this.input.focused = true;
-  //   if (this.inputValue !== '' || this.inputValue !== undefined) {
-  //     this.condition = false;
-  //     this.cityList = this.cityList.filter((city) => {
-  //       return city.toLocaleLowerCase().startsWith(this.inputValue.toLocaleLowerCase());
-  //     })
-  //   }
-  // }
-  // hideCityList() {
-  //   this.input.focused = false;
-  //   if ((this.input.focused === false && this.inputValue === undefined) || (this.input.focused === false && this.inputValue === '')) {
-  //     this.condition = true;
-  //   }
-  // }
   
   showCityList() {
-    this.dataService.inputValue = this.inputValue;
-    this.condition = true;
-    
+    this.dataService.inputValue = this.inputValue;                        //for requestedCityList & requestedCityData
+
     this.dataService.getCityList().subscribe((res: any) => {
 
       this.requestedCityList = res;
@@ -135,22 +119,9 @@ export class HomePageComponent implements OnInit{
 
       this.condition = false;
     })
-    // this.ourData = {
-    //   currCity: this.selectValue,
-    //   currTemp: 12,
-    //   currWeather: 'Mostly clear'
-    // }
-    // this.dataService.favoriteList.forEach(d => {
-    //   if (this.ourData.currCity === d.currCity) {
-    //     this.status = false;
-    //   } else {
-    //     this.status = true;
-    //   }
-    // })
-    // this.inputValue = '';
   }
 
-  chosenCity() {
+  chosenCity() {                                                      //changing currentCityData for render
     this.inputValue = this.selectValue;
 
     this.findedCity = this.requestedCityData.find(city => {
@@ -165,35 +136,39 @@ export class HomePageComponent implements OnInit{
       this.currentCityData = {
         currCity: this.selectValue,
         currTemp: res[0].Temperature.Metric.Value,
-        currWeather: res[0].WeatherText
+        currWeather: res[0].WeatherText,
+        currCityKey: this.findedCity.Key
       }
     })
 
     this.dataService.getFiveDaysOfChosenCity().subscribe((chosenCityFiveDayData: any) => {  
-                                                                        //getting DailyForecasts for 5 days in chosen city
-
+                                                                //getting DailyForecasts for 5 days in chosen city, the code is repeated as in ngOnInit, but some values ​​are reset
       this.currentCityFiveDayData = chosenCityFiveDayData;
+
       this.currentCityFiveDayMetric = [];
       this.currentDayDate = [];
-      this.currentCityFiveDayData.DailyForecasts.forEach((d: any) => {
+
+      this.currentCityFiveDayData.DailyForecasts.forEach((forecast: any) => {
         
-        this.currentCityFiveDayMetric.push(d.Temperature.Maximum.Value);
+        this.currentCityFiveDayMetric.push(forecast.Temperature.Maximum.Value);
         
-        this.currentDayDate.push(d.Date.substr(0, 10).split('').filter((x: string) => x !== '-').join(''));
+        this.currentDayDate.push(forecast.Date.substr(0, 10).split('').filter((x: string) => x !== '-').join(''));
       })
       
       this.years = [];
       this.month = [];
       this.days = [];
-      this.currentDayDate.forEach(d => {
+
+      this.currentDayDate.forEach(date => {
        
-        this.years.push(+(d.slice(0, 4)));
-        this.month.push(+(d.slice(4, 6)) - 1);
-        this.days.push(+(d.slice(6)));
+        this.years.push(+(date.slice(0, 4)));
+        this.month.push(+(date.slice(4, 6)) - 1);
+        this.days.push(+(date.slice(6)));
       
       })
       
       this.dayName = [];
+
       for (let i = 0; i < this.currentDayDate.length; i++) {
         const getWeekDay = (date: Date) => {
           let days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -205,6 +180,7 @@ export class HomePageComponent implements OnInit{
       }
       
       this.currentCityFiveDayRenderData = [];
+
       for (let i = 0; i < this.currentDayDate.length; i++) {
         this.currentCityFiveDayRenderData.push({
           metric: this.currentCityFiveDayMetric[i],
@@ -214,10 +190,17 @@ export class HomePageComponent implements OnInit{
     });
   }
 
-  addThisCity() {
-    this.dataService.favoriteList.push(this.currentCityData);
-    this.dataService.favoriteList.forEach(d => {
-      if (this.currentCityData.currCity === d.currCity) {
+  addThisCity() {                            //adding/deleting chosen city to favorite & changing icon for added city
+    
+    if (this.dataService.favoriteList.find(d => d.currCity === this.currentCityData.currCity)) {
+      this.dataService.favoriteList = this.dataService.favoriteList.filter(city => city.currCity !== this.currentCityData.currCity);
+    }
+    else {
+      this.dataService.favoriteList.push(this.currentCityData);
+    }
+
+    this.dataService.favoriteList.forEach(city => {
+      if (this.currentCityData.currCity === city.currCity) {
         this.status = false;
       } else {
         this.status = true;
