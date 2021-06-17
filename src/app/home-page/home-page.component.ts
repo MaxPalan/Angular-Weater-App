@@ -20,9 +20,10 @@ export class HomePageComponent implements OnInit{
 
   condition: boolean = true;                                          //css class status of <select>
   status: boolean = true;                                             //css class status of icon for added city
+  currCityInfo: boolean = false;
 
   inputValue!: string;
-  selectValue!: string;
+  selectValue: any;
 
   ourCityData!: any[];                                                //data of displayed city
   currentCityData!: currData;
@@ -46,26 +47,34 @@ export class HomePageComponent implements OnInit{
 
   constructor(private dataService: DataService) { }
 
-  ngOnInit(): void {                                                  //checking of added city
-    this.dataService.favoriteList.forEach(city => {
-      if (this.currentCityData.currCity === city.currCity) {
-        this.status = false;
-      } else {
-        this.status = true;
-      }
-    })
+  ngOnInit(): void {                                                 
 
     this.dataService.getKyivCity().subscribe((ourCityData: any) => {                //getting current weather in Kyiv
+      this.currCityInfo = true;
 
       this.ourCityData = ourCityData;
-
-      this.currentCityData = {
-        currCity: 'Kyiv',
-        currTemp: ourCityData[0].Temperature.Metric.Value,
-        currWeather: ourCityData[0].WeatherText,
-        currCityKey: '324505'
+      
+      if (this.dataService.favoriteList.length === 0) {
+        this.currentCityData = {
+          currCity: 'Kyiv',
+          currTemp: ourCityData[0].Temperature.Metric.Value,
+          currWeather: ourCityData[0].WeatherText,
+          currCityKey: '324505'
+        }
+      } else {
+        this.currentCityData = this.dataService.chosenFromFavorite;
       }
+
+      this.dataService.favoriteList.forEach(city => {                              //checking of added city
+        if (this.currentCityData.currCity === city.currCity) {
+          this.status = false;
+        } else {
+          this.status = true;
+        }
+      })
     })
+    
+    
 
     this.dataService.getFiveDaysOfKyiv().subscribe((kyivFiveDayData: any) => {  //getting DailyForecasts for 5 days in Kyiv
 
@@ -140,6 +149,8 @@ export class HomePageComponent implements OnInit{
         currCityKey: this.findedCity.Key
       }
     })
+
+    console.log(this.dataService.currentCityKey);
 
     this.dataService.getFiveDaysOfChosenCity().subscribe((chosenCityFiveDayData: any) => {  
                                                                 //getting DailyForecasts for 5 days in chosen city, the code is repeated as in ngOnInit, but some values ​​are reset

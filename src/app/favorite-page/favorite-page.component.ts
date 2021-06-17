@@ -27,8 +27,8 @@ export class FavoritePageComponent implements OnInit {
   
   setChosenCity(currCity: currData) {                           //data fo render chosen city from favorite list
 
-    this.dataService.chosenFromFavorite = this.dataService.favoriteList.find(city => city == currCity)
-
+    this.dataService.chosenFromFavorite = this.dataService.favoriteList.find(city => city === currCity)
+    console.log(this.dataService.chosenFromFavorite);
   }
   
 
